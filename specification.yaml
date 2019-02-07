@@ -1,0 +1,385 @@
+openapi: 3.0.0
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/cv-discovery/uolGlobaQueryComponents/1.0.0
+    # Auto mocking server function (delete and replace with <servers: []>)
+info:
+  description: A global component-based API for querying genomic and biomedical data
+  version: "1.0.0"
+  title: UoL Global Query API Specification
+  contact:
+    email: uol.admin@cafevariome.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+# tags:
+#   - name: admins
+#     description: Secured Admin-only calls
+#   - name: developers
+#     description: Operations available to regular developers
+
+paths:
+  /query: 
+    post:
+      summary: Make a search query with any combination of the components listed.
+      operationId: postQuery
+      description: 'Make a complex query by combining the available components and defining the correct query structure with a simple query string expresses in the form of boolean logic. e.g. (A AND B) OR C'
+      parameters: 
+        - $ref: '#/components/schemas/subjectVariant'
+        - $ref: '#/components/schemas/phenotype'
+        - $ref: '#/components/schemas/gene'
+        - $ref: '#/components/schemas/region'
+        - $ref: '#/components/schemas/disease'
+        - $ref: '#/components/schemas/booleanLogic'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subjectVariant'
+        '400':
+          description: Unsuccessful response
+          content:
+            text/plain:
+              schema:
+                title: Not found
+              
+  /subjectVariant:
+    get:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a Subject Variant object
+      operationId: getSearchVariant
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/subjectVariant'
+        '400':
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: subjectVariant not found
+      
+    post:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a Subject Variant object
+      operationId: postSearchVariant
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/subjectVariant'
+        '400':
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: subjectVariant not found
+          
+  /phenotype:
+    get:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a phenotype object
+      operationId: getSearchPhenotype
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/phenotype'
+        '400':
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: Phenotype not found
+  /disease:
+    get:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a disease
+      operationId: getSearchDisease
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/disease'
+        '400':
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: disease not found
+  /gene:
+    get:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a gene object
+      operationId: getSearchGene
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/gene'
+        '400':
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: Gene not found
+  
+  /region:
+    get:
+      # tags:
+      #   - developers
+      summary: Perform Search Query for a given region
+      operationId: getSearchRegion
+      description: |
+        By passing in the appropriate options, you can query the components listed
+      parameters:
+        - name: regionType
+          in: query
+          description: Type of region
+          schema:
+            type: string
+            example: genome
+        - name: build
+          in: query
+          description: genomic build
+          schema:
+            type: string
+            example: GRCH38
+        - name: start
+          in: query
+          description: Base start of chromosomic region
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            example: 686554151
+        - name: end
+          in: query
+          description: Base end of chromosomic region
+          schema:
+            type: integer
+            format: int64
+            example: 686555948
+        - name: zygosity
+          in: query
+          description: degree of similarity of the alleles for a trait in an organism
+          schema:
+            type: string 
+            example: heterozygous
+        
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/region'
+        '400':
+          description: bad input parameter
+
+
+components:
+  schemas:
+    booleanLogic:
+      description: Boolean logic "AND" and "OR" may be used to define the way in which components should be combined. Support for boolean logic operators are optional.
+      type: object
+      properties:
+        queryString:
+          type: string
+          example: A AND (B OR C)
+    
+    subjectVariant:
+      type: object
+      properties:
+        componentID:
+          type: string
+        name:
+          type: string
+          example: rs8179178
+          description: Name of the Gene.
+        hgvs:
+          type: string
+          example: NM_000088.3:c.589G>T
+          description: HGVS Nomenclature.
+        allele:
+          type: string
+          enum: 
+            - A
+            - G
+            - C
+            - T
+        chromosome:
+          type: string
+          example: 1,X,Y
+          enum:
+            - '1'
+            - '2'
+            - '3'
+            - '4'
+            - '5'
+            - '6'
+            - '7'
+            - '8'
+            - '9'
+            - '10'
+            - '11'
+            - '12'
+            - '13'
+            - '14'
+            - '15'
+            - '16'
+            - '17'
+            - '18'
+            - '19'
+            - '20'
+            - '21'
+            - '22'
+            - '23'
+            - X
+            - Y
+            - MT
+          description: Reference name (chromosome). Accepting values 1-23, X, Y. 
+        range:
+          type: string
+          example: 1:6635137-6635325
+          description: Genomic Range. Can be comma separated list
+        referenceBases:
+          type: string
+          pattern: ^([ATCGN]+)$
+          example: G
+          description: VCF-style reference alleles for this variant. At least one base.
+        alternateBases:
+          type: string
+          example: C
+          pattern: ^([ATCGN.]+)$
+          description: VCF-style alternate alleles for this variant. At least one base.
+        mutationType:
+          type: string
+          example: SNP,INDEL
+          description: Type of variant mutation
+        frequency: 
+          type: integer
+          example: 0.25
+          description: relative frequency of an allele (variant of a gene) at a particular locus in a population
+        parentalOrigin:
+          type: string
+          example: maternally transmitted
+          description: Which parent the variant was 
+        pathogenicity:
+          type: string
+          example: pathogenic, non-pathogenic
+          description: pathogenicity levels of a subject variant
+        sequence: 
+          type: string
+          example: ACGATAAT
+          description: Nucleobase sequence search 
+        consequenceType: 
+          type: string
+          example: missense_variant, non_synonymous
+          description: Type of consequence
+    gene:
+      type: object
+      properties: 
+        componentID: 
+          type: string
+        name: 
+          type: string
+          example: BRCA2
+          description: Gene name
+        hgncID:
+          type: string
+          example: HGNC:1101
+          description: Hugo Gene Nomenclature Committee
+        geneSource:
+          type: string
+          example: refseq
+          description: search for genes of a specific source (Ensembl,refseq,etc)
+    
+    phenotype:
+      type: object
+      properties:
+        componentID:
+          type: string
+        HPOTermID:
+          type: string
+          example: HP:0040273
+          description: Human Phenotype Ontology term IDs
+        HPOTermName:
+          type: string
+          example: adenocarcinoma
+          description: Human Phenotype Ontology term names
+        ageOfOnset:
+          type: integer
+          format: int64
+          description: An HPO id of a term that represents a descendant of HP:0003674 "Clinical Course / Onset" or alternatives thereof.
+    disease:
+      type: object
+      properties:
+        componentID:
+          type: string
+        DOTermID:
+          type: string
+          example: DOID:0050580
+          description: Disease Ontology term IDs
+        DOTermName:
+          type: string
+          example:   Legionnaires' disease
+          description: Disease ontology term names
+        ageOfOnset:
+          type: integer
+          format: int64
+          description: An HPO id of a term that represents a descendant of HP:0003674 "Clinical Course / Onset" or alternatives thereof.
+    region:
+      type: object
+      properties: 
+        regionType:
+          type: string
+          example: genome
+          description: Type of region
+        build:
+          type: string
+          example: GRCH38
+          description: genomic build
+        start:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 686554151
+          description: Base start of chromosomic region
+        end: 
+          type: integer
+          example: 686555948
+          description: Base end of chromosomic region
+        zygosity: 
+          type: string 
+          example: heterozygous
+          description: degree of similarity of the alleles for a trait in an organism
