@@ -210,6 +210,10 @@ components:
         negated:
           type: boolean
           description: For use primarily with HPO queries that support it to indicate phenotype has been tested for and determined not to be present in the subject. This differs from term not being listed in HPO terms for this subject but whether the subject has the phenotype is underdetermined. Default is false.
+        modeofinheritance:
+          type: string
+          description: Mode of inheritance for this phenotype e.g. Autosomal Dominant
+
 
     region:
       type: object
