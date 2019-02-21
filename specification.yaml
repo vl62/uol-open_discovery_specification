@@ -20,18 +20,24 @@ info:
 #     description: Operations available to regular developers
 
 paths:
-  /query: 
+  /query:
     post:
       summary: Make a search query with any combination of the components listed.
       operationId: postQuery
       description: 'Make a complex query by combining the available components and defining the correct query structure with a simple query string expresses in the form of boolean logic. e.g. (A AND B) OR C'
-      parameters: 
-        - $ref: '#/components/schemas/subjectVariant'
-        - $ref: '#/components/schemas/phenotype'
-        - $ref: '#/components/schemas/gene'
-        - $ref: '#/components/schemas/region'
-        - $ref: '#/components/schemas/disease'
-        - $ref: '#/components/schemas/booleanLogic'
+      parameters:
+      - $ref: '#/components/schemas/subjectVariant'
+      - $ref: '#/components/schemas/phenotype'
+      - $ref: '#/components/schemas/gene'
+      - $ref: '#/components/schemas/region'
+      - $ref: '#/components/schemas/transcript'
+      - $ref: '#/components/schemas/tissue'
+      - $ref: '#/components/schemas/subject'
+      - $ref: '#/components/schemas/demographics'
+      - $ref: '#/components/schemas/sample'
+      - $ref: '#/components/schemas/variantconsequence'
+      - $ref: '#/components/schemas/genotype'
+      - $ref: '#/components/schemas/booleanLogic'
       responses:
         '200':
           description: Successful response
@@ -45,178 +51,17 @@ paths:
             text/plain:
               schema:
                 title: Not found
-              
-  /subjectVariant:
-    get:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a Subject Variant object
-      operationId: getSearchVariant
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/subjectVariant'
-        '400':
-          description: Not found response
-          content:
-            text/plain:
-              schema:
-                title: subjectVariant not found
-      
-    post:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a Subject Variant object
-      operationId: postSearchVariant
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/subjectVariant'
-        '400':
-          description: Not found response
-          content:
-            text/plain:
-              schema:
-                title: subjectVariant not found
-          
-  /phenotype:
-    get:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a phenotype object
-      operationId: getSearchPhenotype
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/phenotype'
-        '400':
-          description: Not found response
-          content:
-            text/plain:
-              schema:
-                title: Phenotype not found
-  /disease:
-    get:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a disease
-      operationId: getSearchDisease
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/disease'
-        '400':
-          description: Not found response
-          content:
-            text/plain:
-              schema:
-                title: disease not found
-  /gene:
-    get:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a gene object
-      operationId: getSearchGene
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/gene'
-        '400':
-          description: Not found response
-          content:
-            text/plain:
-              schema:
-                title: Gene not found
-  
-  /region:
-    get:
-      # tags:
-      #   - developers
-      summary: Perform Search Query for a given region
-      operationId: getSearchRegion
-      description: |
-        By passing in the appropriate options, you can query the components listed
-      parameters:
-        - name: regionType
-          in: query
-          description: Type of region
-          schema:
-            type: string
-            example: genome
-        - name: build
-          in: query
-          description: genomic build
-          schema:
-            type: string
-            example: GRCH38
-        - name: start
-          in: query
-          description: Base start of chromosomic region
-          schema:
-            type: integer
-            format: int64
-            minimum: 0
-            example: 686554151
-        - name: end
-          in: query
-          description: Base end of chromosomic region
-          schema:
-            type: integer
-            format: int64
-            example: 686555948
-        - name: zygosity
-          in: query
-          description: degree of similarity of the alleles for a trait in an organism
-          schema:
-            type: string 
-            example: heterozygous
-        
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/region'
-        '400':
-          description: bad input parameter
-
 
 components:
   schemas:
     booleanLogic:
-      description: Boolean logic "AND" and "OR" may be used to define the way in which components should be combined. Support for boolean logic operators are optional.
+      description: Boolean operators "AND" and "OR" may be used to define the way in which components should be combined. Support for boolean logic operators are optional.
       type: object
       properties:
         queryString:
           type: string
           example: A AND (B OR C)
-    
+
     subjectVariant:
       type: object
       properties:
@@ -225,53 +70,31 @@ components:
         name:
           type: string
           example: rs8179178
-          description: Name of the Gene.
+          description: An identifier for this variant e.g. rs id
+        source:
+          type: string
+          example: dbSNP
+          description: The source of the identifier used in name parameter
         hgvs:
           type: string
           example: NM_000088.3:c.589G>T
-          description: HGVS Nomenclature.
+          description: HGVS Nomenclature
         allele:
           type: string
-          enum: 
-            - A
-            - G
-            - C
-            - T
+          pattern: ^([ATCGN]+)$
+        genomebuild:
+          type: string
+          example: GRCh38
+          description: The genome build cordinates for this variant are based on e.g. Grch38
         chromosome:
           type: string
-          example: 1,X,Y
-          enum:
-            - '1'
-            - '2'
-            - '3'
-            - '4'
-            - '5'
-            - '6'
-            - '7'
-            - '8'
-            - '9'
-            - '10'
-            - '11'
-            - '12'
-            - '13'
-            - '14'
-            - '15'
-            - '16'
-            - '17'
-            - '18'
-            - '19'
-            - '20'
-            - '21'
-            - '22'
-            - '23'
-            - X
-            - Y
-            - MT
-          description: Reference name (chromosome). Accepting values 1-23, X, Y. 
+          example: 1,X,Y,MT
+          pattern: ^(\d{1,2}|[XY]|MT)$
+          description: Reference name (chromosome). Accepting values 1-22, X, Y, MT
         range:
           type: string
           example: 1:6635137-6635325
-          description: Genomic Range. Can be comma separated list
+          description: A comma separated list of genomic ranges in zero-based half open format, chromosome:start-end
         referenceBases:
           type: string
           pattern: ^([ATCGN]+)$
@@ -280,38 +103,64 @@ components:
         alternateBases:
           type: string
           example: C
-          pattern: ^([ATCGN.]+)$
-          description: VCF-style alternate alleles for this variant. At least one base.
+          pattern: ^([ATCGN]+)$
+          description: VCF-style alternate alleles for this variant. At least one base but can be ".".
         mutationType:
           type: string
-          example: SNP,INDEL
+          example: SNV,INDEL
           description: Type of variant mutation
-        frequency: 
+        frequency:
           type: integer
           example: 0.25
-          description: relative frequency of an allele (variant of a gene) at a particular locus in a population
-        parentalOrigin:
+          description:
+        variantinheritance:
           type: string
-          example: maternally transmitted
-          description: Which parent the variant was 
-        pathogenicity:
+          example: maternal
+          description: From which parent(s) was the variant inherited or was it de novo
+        origin:
+          type: string
+          example: germline
+          description: Is the variant germline or somatic in origin in this subject. Default should be germline.
+        pathogenic:
           type: string
           example: pathogenic, non-pathogenic
-          description: pathogenicity levels of a subject variant
-        sequence: 
+          description: Whether this variant was causal for the phenotype
+        zygosity:
           type: string
-          example: ACGATAAT
-          description: Nucleobase sequence search 
-        consequenceType: 
-          type: string
-          example: missense_variant, non_synonymous
-          description: Type of consequence
+          example: heterozygous
+          description: Zygosity of the variant in this subject
+        start:
+          type: integer
+          example: 1234567
+          description: The start coordinate of the variant in the genome
+        end:
+          type: integer
+          example: 1234570
+          description:
+
+    # subjectCopynumbervariant:
+    #   type: object
+    #   properties:
+    #     componentID:
+    #       type: string
+    #     name:
+    #       type: string
+    #       example:
+    #
+    # subjectStructuralvariant:
+    #   type: object
+    #   properties:
+    #     componentID:
+    #       type: string
+    #       example:
+    #       description:
+
     gene:
       type: object
-      properties: 
-        componentID: 
+      properties:
+        componentID:
           type: string
-        name: 
+        name:
           type: string
           example: BRCA2
           description: Gene name
@@ -322,45 +171,51 @@ components:
         geneSource:
           type: string
           example: refseq
-          description: search for genes of a specific source (Ensembl,refseq,etc)
-    
+          description: search for genes of a specific source (Ensembl, refseq)
+
+    transcript:
+      type: object
+      properties:
+        componentID:
+          type: string
+        transcriptid:
+          type: name
+          example: NM_000527.1
+        transcriptsource:
+          type: string
+          example: refseq
+          description: The source of the transcript i.e. RefSeq or Ensembl
+
     phenotype:
       type: object
       properties:
         componentID:
           type: string
-        HPOTermID:
+        termID:
           type: string
           example: HP:0040273
           description: Human Phenotype Ontology term IDs
-        HPOTermName:
+        termName:
           type: string
           example: adenocarcinoma
           description: Human Phenotype Ontology term names
+        source:
+          type: string
+          example: HPO
+          description: The ontology from which the term id and name are sourced e.g. HPO, DiseaseOntology
         ageOfOnset:
           type: integer
           format: int64
           description: An HPO id of a term that represents a descendant of HP:0003674 "Clinical Course / Onset" or alternatives thereof.
-    disease:
+        negated:
+          type: boolean
+          description: For use primarily with HPO queries that support it to indicate phenotype has been tested for and determined not to be present in the subject. This differs from term not being listed in HPO terms for this subject but whether the subject has the phenotype is underdetermined. Default is false.
+
+    region:
       type: object
       properties:
         componentID:
           type: string
-        DOTermID:
-          type: string
-          example: DOID:0050580
-          description: Disease Ontology term IDs
-        DOTermName:
-          type: string
-          example:   Legionnaires' disease
-          description: Disease ontology term names
-        ageOfOnset:
-          type: integer
-          format: int64
-          description: An HPO id of a term that represents a descendant of HP:0003674 "Clinical Course / Onset" or alternatives thereof.
-    region:
-      type: object
-      properties: 
         regionType:
           type: string
           example: genome
@@ -368,18 +223,72 @@ components:
         build:
           type: string
           example: GRCH38
-          description: genomic build
+          description: Genome build version
         start:
           type: integer
           format: int64
           minimum: 0
           example: 686554151
-          description: Base start of chromosomic region
-        end: 
+          description: Start position of chromosome region
+        end:
           type: integer
           example: 686555948
-          description: Base end of chromosomic region
-        zygosity: 
-          type: string 
-          example: heterozygous
-          description: degree of similarity of the alleles for a trait in an organism
+          description: End position of chromosome region
+
+    tissue:
+      type: object
+      properties:
+        componentID:
+          type: string
+        tissuetype:
+          type: string
+          description: The tissue/organ/
+        timesampled:
+          type: string
+          description: The date-time that the sample was taken
+
+    subject:
+      type: object
+      properties:
+        componentID:
+          type: string
+        subjectid:
+          type: string
+
+    demographics:
+      type: object
+      properties:
+        componentID:
+          type: string
+        age:
+          type:: integer
+          description:
+        sex:
+          type: string
+          description: PATO term describing biological sex of the subject
+
+    sample:
+      type: object
+      properties:
+        componentID:
+          type: string
+        sampleid:
+          type: string
+
+    variantconsequence:
+      type: object
+      properties:
+        componentID:
+          type: string
+        consequenceType:
+          type: string
+          example: missense_variant, non_synonymous
+          description: Type of consequence in sequence ontology format
+
+    genotype:
+      type: object
+      properties:
+        componentID:
+          type: string
+        genotype:
+          type: string
