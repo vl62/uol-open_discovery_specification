@@ -85,11 +85,11 @@ components:
         genomebuild:
           type: string
           example: GRCh38
-          description: The genome build cordinates for this variant are based on e.g. Grch38
+          description: The genome build cordinates for this variant are based on e.g. GRCh38
         chromosome:
           type: string
           example: 1,X,Y,MT
-          pattern: ^(\d{1,2}|[XY]|MT)$
+          pattern: ^([1-9]|1[0-9]|2[0-2]|X|Y|MT)$
           description: Reference name (chromosome). Accepting values 1-22, X, Y, MT
         range:
           type: string
@@ -103,28 +103,28 @@ components:
         alternateBases:
           type: string
           example: C
-          pattern: ^([ATCGN]+)$
+          pattern: ^([ATCGN.]+)$
           description: VCF-style alternate alleles for this variant. At least one base but can be ".".
-        mutationType:
+        variantType:
           type: string
           example: SNV,INDEL
-          description: Type of variant mutation
+          description: Type of variant
         frequency:
           type: integer
           example: 0.25
-          description:
-        variantinheritance:
+          description: The frequency of the variant in this subject
+        variantInheritance:
           type: string
           example: maternal
           description: From which parent(s) was the variant inherited or was it de novo
         origin:
           type: string
-          example: germline
-          description: Is the variant germline or somatic in origin in this subject. Default should be germline.
+          example: germline, somatic
+          description: Is the variant germline or somatic in origin in this subject
         pathogenic:
           type: string
           example: pathogenic, non-pathogenic
-          description: Whether this variant was causal for the phenotype
+          description: Whether this variant was causal for the phenotype in this subject
         zygosity:
           type: string
           example: heterozygous
@@ -136,24 +136,7 @@ components:
         end:
           type: integer
           example: 1234570
-          description:
-
-    # subjectCopynumbervariant:
-    #   type: object
-    #   properties:
-    #     componentID:
-    #       type: string
-    #     name:
-    #       type: string
-    #       example:
-    #
-    # subjectStructuralvariant:
-    #   type: object
-    #   properties:
-    #     componentID:
-    #       type: string
-    #       example:
-    #       description:
+          description: The end coordinate of this variant in the genome
 
     gene:
       type: object
@@ -167,11 +150,7 @@ components:
         hgncID:
           type: string
           example: HGNC:1101
-          description: Hugo Gene Nomenclature Committee
-        geneSource:
-          type: string
-          example: refseq
-          description: search for genes of a specific source (Ensembl, refseq)
+          description: Hugo Gene Nomenclature Committee identifier
 
     transcript:
       type: object
@@ -194,11 +173,11 @@ components:
         termID:
           type: string
           example: HP:0040273
-          description: Human Phenotype Ontology term IDs
+          description: Phenotype term identifiers from source ontology
         termName:
           type: string
           example: adenocarcinoma
-          description: Human Phenotype Ontology term names
+          description: Phenotype term names from source ontology
         source:
           type: string
           example: HPO
@@ -209,11 +188,10 @@ components:
           description: An HPO id of a term that represents a descendant of HP:0003674 "Clinical Course / Onset" or alternatives thereof.
         negated:
           type: boolean
-          description: For use primarily with HPO queries that support it to indicate phenotype has been tested for and determined not to be present in the subject. This differs from term not being listed in HPO terms for this subject but whether the subject has the phenotype is underdetermined. Default is false.
+          description: For use primarily with HPO queries that support it to indicate phenotype has been tested for and determined to be absent in the subject. This differs from term not being listed in HPO terms for this subject where the presence of the phenotype is underdetermined. Default is false.
         modeofinheritance:
           type: string
           description: Mode of inheritance for this phenotype e.g. Autosomal Dominant
-
 
     region:
       type: object
@@ -228,6 +206,11 @@ components:
           type: string
           example: GRCH38
           description: Genome build version
+        chromosome:
+          type: string
+          example: 1,X,Y,MT
+          pattern: ^(\d{1,2}|[XY]|MT)$
+          description: Reference name (chromosome). Accepting values 1-22, X, Y, MT
         start:
           type: integer
           format: int64
@@ -246,7 +229,7 @@ components:
           type: string
         tissuetype:
           type: string
-          description: The tissue/organ/
+          description: The tissue/organ of origin for this sample
         timesampled:
           type: string
           description: The date-time that the sample was taken
